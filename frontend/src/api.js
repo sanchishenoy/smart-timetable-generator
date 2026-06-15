@@ -19,5 +19,9 @@ export const api = {
   addRoom:       (data) => axios.post(`${BASE}/rooms/`, data).then(r => r.data),
   deleteRoom:    (id)   => axios.delete(`${BASE}/rooms/${id}`).then(r => r.data),
 
+  getConstraints:      ()     => axios.get(`${BASE}/constraints/`).then(r => r.data),
+  addConstraint:       (data) => axios.post(`${BASE}/constraints/`, data).then(r => r.data),
+  deleteConstraint:    (id)   => axios.delete(`${BASE}/constraints/${id}`).then(r => r.data),
+
   generate: (payload) => axios.post(`${BASE}/timetable/generate`, payload).then(r => r.data),
 };
