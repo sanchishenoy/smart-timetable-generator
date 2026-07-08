@@ -56,7 +56,7 @@ export default function ClassesPage({ classes = [], setClasses, subjects = [], s
       });
       setClasses(prev => [...prev, created]);
       setForm({ name: "", branch: "", strength: 60, subjectIds: subjects.map(s => s.id) });
-      showToast("Class added ✅");
+      showToast("Class added");
     } catch {
       showToast("Failed to add class");
     } finally {
@@ -145,7 +145,7 @@ export default function ClassesPage({ classes = [], setClasses, subjects = [], s
                 className={`tag ${form.subjectIds.includes(s.id) ? "selected" : ""}`}
                 onClick={() => toggleSubject(s.id)}
               >
-                {s.name}{s.isElective ? " ⭐" : s.needsLab ? " 🔬" : ""}
+                {s.name}{s.isElective ? " · Elective" : s.needsLab ? " · Lab" : ""}
               </span>
             ))}
           </div>

@@ -12,7 +12,7 @@ export default function SubjectsPage({ subjects = [], setSubjects, showToast }) 
       const created = await api.addSubject({ ...form, hoursPerWeek: Number(form.hoursPerWeek) });
       setSubjects(prev => [...prev, created]);
       setForm({ name: "", code: "", hoursPerWeek: 3, needsLab: false, isElective: false });
-      showToast("Subject added ✅");
+      showToast("Subject added");
     } catch {
       showToast("Failed to add subject — is Flask running?");
     } finally {

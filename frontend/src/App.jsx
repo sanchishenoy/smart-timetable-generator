@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { api } from "./api";
+import Icon            from "./icons";
 import Dashboard       from "./components/Dashboard";
 import SubjectsPage    from "./components/SubjectsPage";
 import TeachersPage    from "./components/TeachersPage";
@@ -11,14 +12,14 @@ import TimetablePage   from "./components/TimetablePage";
 import "./styles.css";
 
 const NAV = [
-  { id: "dashboard",   icon: "📊", label: "Dashboard"   },
-  { id: "subjects",    icon: "📚", label: "Subjects"     },
-  { id: "teachers",    icon: "👩‍🏫", label: "Teachers"    },
-  { id: "classes",     icon: "🏫", label: "Classes"      },
-  { id: "rooms",       icon: "🚪", label: "Rooms"        },
-  { id: "constraints", icon: "⚙️", label: "Constraints"  },
-  { id: "generate",    icon: "⚡", label: "Generate"     },
-  { id: "timetable",   icon: "📅", label: "Timetable"    },
+  { id: "dashboard",   label: "Dashboard"   },
+  { id: "subjects",    label: "Subjects"     },
+  { id: "teachers",    label: "Teachers"    },
+  { id: "classes",     label: "Classes"      },
+  { id: "rooms",       label: "Rooms"        },
+  { id: "constraints", label: "Constraints"  },
+  { id: "generate",    label: "Generate"     },
+  { id: "timetable",   label: "Timetable"    },
 ];
 
 export default function App() {
@@ -59,8 +60,8 @@ export default function App() {
     <div className="app">
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <h1>Timetable AI</h1>
-          <p>Smart Scheduler</p>
+          <h1>Timegrid</h1>
+          <p>Academic Scheduling</p>
         </div>
         <nav className="sidebar-nav">
           {NAV.map(n => (
@@ -69,10 +70,10 @@ export default function App() {
               className={`nav-item ${page === n.id ? "active" : ""}`}
               onClick={() => setPage(n.id)}
             >
-              <span className="nav-icon">{n.icon}</span>
+              <span className="nav-icon"><Icon name={n.id} /></span>
               {n.label}
               {n.id === "timetable" && timetableData && (
-                <span className="badge badge-green" style={{ marginLeft: "auto" }}>READY</span>
+                <span className="badge badge-green" style={{ marginLeft: "auto" }}>Ready</span>
               )}
             </div>
           ))}
@@ -84,8 +85,8 @@ export default function App() {
           <h2>{NAV.find(n => n.id === page)?.label}</h2>
           {page === "timetable" && timetableData && (
             <div className="topbar-actions">
-              <button className="btn btn-ghost btn-sm" onClick={() => window.print()}>📄 PDF</button>
-              <button className="btn btn-primary btn-sm" onClick={() => setPage("generate")}>🔄 Regenerate</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => window.print()}>Download PDF</button>
+              <button className="btn btn-primary btn-sm" onClick={() => setPage("generate")}>Regenerate</button>
             </div>
           )}
         </div>
@@ -102,7 +103,7 @@ export default function App() {
         </div>
       </main>
 
-      {toast && <div className="toast">✅ {toast}</div>}
+      {toast && <div className="toast">{toast}</div>}
     </div>
   );
 }

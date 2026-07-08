@@ -27,7 +27,7 @@ export default function TeachersPage({ teachers = [], setTeachers, subjects = []
       const created = await api.addTeacher(payload);
       setTeachers(prev => [...prev, created]);
       setForm({ name: "", subjectIds: [], maxHours: 20 });
-      showToast("Teacher added ✅");
+      showToast("Teacher added");
     } catch {
       showToast("Failed to add teacher");
     } finally {
@@ -131,7 +131,7 @@ export default function TeachersPage({ teachers = [], setTeachers, subjects = []
         {teachers.map((t, i) => {
           const hrs = subjectHours(t);
           const pct = Math.min(100, Math.round((hrs / t.maxHours) * 100));
-          const barColor = pct > 90 ? "#ff7070" : pct > 70 ? "#ffc462" : "#5effa0";
+          const over = hrs > t.maxHours;
 
           return (
             <div key={t.id} className="list-item" style={{ flexDirection: "column", alignItems: "stretch", gap: 8 }}>
@@ -146,18 +146,18 @@ export default function TeachersPage({ teachers = [], setTeachers, subjects = []
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  <span className="badge badge-amber">Max {t.maxHours}h</span>
+                  <span className="badge">Max {t.maxHours}h</span>
                   <button className="btn btn-danger btn-sm" onClick={() => handleDelete(t.id)}>×</button>
                 </div>
               </div>
               {/* Workload bar */}
               <div>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "var(--color-text-secondary)", marginBottom: 3 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--color-text-secondary)", marginBottom: 5 }}>
                   <span>Workload</span>
-                  <span style={{ color: barColor }}>{hrs}h assigned / {t.maxHours}h max</span>
+                  <span style={{ color: over ? "var(--danger)" : "var(--text-heading)" }}>{hrs}h assigned / {t.maxHours}h max</span>
                 </div>
                 <div className="workload-bar">
-                  <div className="workload-fill" style={{ width: `${pct}%`, background: barColor }} />
+                  <div className={`workload-fill ${over ? "over" : ""}`} style={{ width: `${pct}%` }} />
                 </div>
               </div>
             </div>

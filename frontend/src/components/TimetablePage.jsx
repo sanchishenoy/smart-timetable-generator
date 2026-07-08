@@ -56,7 +56,7 @@ export default function TimetablePage({
         <div className="cell-subject">
           {entry.subject}
           {entry.isDouble && (
-            <span style={{ fontSize: 9, marginLeft: 4, color: "#ffc462" }}>●●</span>
+            <span style={{ fontSize: 9, marginLeft: 4, color: "var(--accent)" }}>●●</span>
           )}
         </div>
         {!isRightOfDouble && <div className="cell-teacher">{entry.teacher}</div>}
@@ -99,11 +99,11 @@ export default function TimetablePage({
           {DAYS.map((dayName, di) => (
             <tr key={di}>
               <td style={{
-                background: "#1a2540",
-                color: "#7c9ef0",
+                background: "var(--bg)",
+                color: "var(--text-heading)",
                 fontWeight: 600,
                 textAlign: "center",
-                fontSize: 12,
+                fontSize: 13,
                 whiteSpace: "nowrap",
                 padding: "0 12px",
               }}>
@@ -131,7 +131,7 @@ export default function TimetablePage({
         {/* Class selector buttons — built from live classes prop */}
         <div style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
           {classes.length === 0 && (
-            <span style={{ fontSize: 12, color: "#8892a4" }}>No classes found</span>
+            <span style={{ fontSize: 13, color: "var(--text-muted)" }}>No classes found</span>
           )}
           {classes.map(c => (
             <button
@@ -173,7 +173,7 @@ export default function TimetablePage({
         {/* Teacher selector buttons — built from live teachers prop */}
         <div style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
           {teachers.length === 0 && (
-            <span style={{ fontSize: 12, color: "#8892a4" }}>No teachers found</span>
+            <span style={{ fontSize: 13, color: "var(--text-muted)" }}>No teachers found</span>
           )}
           {teachers.map(t => (
             <button
@@ -192,23 +192,23 @@ export default function TimetablePage({
             display: "flex",
             alignItems: "center",
             gap: 12,
-            padding: "8px 12px",
-            background: "#0f1117",
-            borderRadius: 7,
+            padding: "10px 14px",
+            background: "var(--bg)",
+            borderRadius: "var(--radius-sm)",
             marginBottom: 12,
-            border: "1px solid #2d3748",
+            border: "1px solid var(--border)",
           }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#c8d6f0" }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text-heading)" }}>
               {teachers.find(t => t.id === selectedTeacher)?.name || "Unknown"}
             </div>
-            <div style={{ fontSize: 11, color: "#8892a4" }}>
+            <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
               {subjects
                 .filter(s => teachers.find(t => t.id === selectedTeacher)?.subjects?.includes(s.id))
                 .map(s => s.name)
                 .join(", ") || "No subjects"}
             </div>
             <div style={{ marginLeft: "auto" }}>
-              <span className="badge badge-blue">{periodCount} periods/week</span>
+              <span className="badge">{periodCount} periods/week</span>
             </div>
           </div>
         )}
@@ -242,15 +242,15 @@ export default function TimetablePage({
   return (
     <div>
       {/* Legend */}
-      <div className="legend-print-hide" style={{ display: "flex", gap: 16, marginBottom: 12, flexWrap: "wrap" }}>
+      <div className="legend-print-hide" style={{ display: "flex", gap: 20, marginBottom: 16, flexWrap: "wrap" }}>
         {[
-          { color: "#5effa0", label: "Lab / Double period" },
-          { color: "#c09ef0", label: "Fixed period"        },
-          { color: "#2d3748", label: "Free period"         },
-          { color: "#ffc462", label: "●● Double block"     },
+          { color: "var(--success)",       label: "Lab / Double period" },
+          { color: "var(--accent)",        label: "Elective"            },
+          { color: "var(--border-strong)", label: "Fixed period"        },
+          { color: "var(--border)",        label: "Free period"         },
         ].map((l, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11, color: "#8892a4" }}>
-            <div style={{ width: 10, height: 10, borderRadius: 2, background: l.color, flexShrink: 0 }} />
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--text-body)" }}>
+            <div style={{ width: 12, height: 12, borderRadius: 3, background: l.color, flexShrink: 0 }} />
             {l.label}
           </div>
         ))}

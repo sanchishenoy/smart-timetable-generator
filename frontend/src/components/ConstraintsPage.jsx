@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { DAYS, PERIODS, PERIOD_TIMES } from "../constants";
 
 const TYPES = [
-  { value: "teacher_unavail",  label: "🚫 Teacher Unavailable" },
-  { value: "fixed",            label: "📌 Fixed Period"         },
-  { value: "max_labs_per_day", label: "🔬 Max Labs / Day"       },
+  { value: "teacher_unavail",  label: "Teacher Unavailable" },
+  { value: "fixed",            label: "Fixed Period"         },
+  { value: "max_labs_per_day", label: "Max Labs / Day"       },
 ];
 
 export default function ConstraintsPage({ constraints = [], setConstraints, teachers = [], showToast }) {
@@ -48,7 +48,7 @@ export default function ConstraintsPage({ constraints = [], setConstraints, teac
 
     setConstraints(prev => [...prev, entry]);
     setDescription("");
-    showToast("Constraint added ✅");
+    showToast("Constraint added");
   };
 
   const handleDelete = (id) => {
@@ -98,8 +98,8 @@ export default function ConstraintsPage({ constraints = [], setConstraints, teac
             <div className="form-group">
               <label className="form-label">Teacher</label>
               {teachers.length === 0 ? (
-                <div style={{ fontSize: 12, color: "#ff9090", marginTop: 6 }}>
-                  ⚠️ No teachers added yet
+                <div style={{ fontSize: 13, color: "var(--danger)", marginTop: 6 }}>
+                  No teachers added yet
                 </div>
               ) : (
                 <select
@@ -181,7 +181,7 @@ export default function ConstraintsPage({ constraints = [], setConstraints, teac
         {/* Fixed periods */}
         <div className="card">
           <div className="card-header">
-            <span className="card-title">📌 Fixed Periods</span>
+            <span className="card-title">Fixed Periods</span>
             <span className="badge badge-amber">{fixed.length}</span>
           </div>
           {fixed.length === 0 && (
@@ -189,12 +189,11 @@ export default function ConstraintsPage({ constraints = [], setConstraints, teac
           )}
           {fixed.map(c => (
             <div key={c.id} className="constraint-row">
-              <span>📌</span>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, fontWeight: 500, color: "#c8d6f0" }}>
+                <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text-heading)" }}>
                   {c.description}
                 </div>
-                <div style={{ fontSize: 10, color: "#4a5568", marginTop: 2 }}>
+                <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>
                   {DAYS[c.day]} · Period {c.period} · All classes
                 </div>
               </div>
@@ -206,7 +205,7 @@ export default function ConstraintsPage({ constraints = [], setConstraints, teac
         {/* Teacher unavailability */}
         <div className="card">
           <div className="card-header">
-            <span className="card-title">🚫 Teacher Unavailability</span>
+            <span className="card-title">Teacher Unavailability</span>
             <span className="badge badge-red">{unavail.length}</span>
           </div>
           {unavail.length === 0 && (
@@ -214,12 +213,11 @@ export default function ConstraintsPage({ constraints = [], setConstraints, teac
           )}
           {unavail.map(c => (
             <div key={c.id} className="constraint-row">
-              <span>🚫</span>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, fontWeight: 500, color: "#c8d6f0" }}>
+                <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text-heading)" }}>
                   {teacherName(c.teacherId)}
                 </div>
-                <div style={{ fontSize: 10, color: "#4a5568", marginTop: 2 }}>
+                <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>
                   {DAYS[c.day]} · Period {c.period}
                 </div>
               </div>
@@ -232,7 +230,7 @@ export default function ConstraintsPage({ constraints = [], setConstraints, teac
       {/* Lab daily caps */}
       <div className="card">
         <div className="card-header">
-          <span className="card-title">🔬 Lab Limits</span>
+          <span className="card-title">Lab Limits</span>
           <span className="badge badge-green">{labCaps.length}</span>
         </div>
         {labCaps.length === 0 && (
@@ -240,12 +238,11 @@ export default function ConstraintsPage({ constraints = [], setConstraints, teac
         )}
         {labCaps.map(c => (
           <div key={c.id} className="constraint-row">
-            <span>🔬</span>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 12, fontWeight: 500, color: "#c8d6f0" }}>
+              <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text-heading)" }}>
                 {c.description}
               </div>
-              <div style={{ fontSize: 10, color: "#4a5568", marginTop: 2 }}>
+              <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>
                 Max {c.maxCount} lab{c.maxCount > 1 ? "s" : ""}/day · All classes
               </div>
             </div>

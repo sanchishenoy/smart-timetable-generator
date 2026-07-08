@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { api } from "../api";
 
 const STEPS = [
-  { icon: "🔵", title: "Graph Construction",   desc: "Building conflict graph — nodes=sessions, edges=conflicts" },
-  { icon: "🎨", title: "Graph Coloring",        desc: "Assigning time-slot colors to non-adjacent nodes"        },
-  { icon: "⬅️", title: "Backtracking (CSP)",    desc: "Resolving infeasible assignments, retrying alternatives"  },
-  { icon: "⚡", title: "Greedy Optimization",   desc: "MRV heuristic: fewest-remaining-values node first"       },
-  { icon: "✅", title: "Complete",              desc: "Conflict-free timetable ready"                           },
+  { title: "Graph Construction",  desc: "Building conflict graph — nodes = sessions, edges = conflicts" },
+  { title: "Graph Colouring",     desc: "Assigning time-slot colours to non-adjacent nodes"           },
+  { title: "Backtracking (CSP)",  desc: "Resolving infeasible assignments, retrying alternatives"      },
+  { title: "Greedy Optimisation", desc: "MRV heuristic: fewest-remaining-values node first"            },
+  { title: "Complete",            desc: "Conflict-free timetable ready"                                 },
 ];
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -48,7 +48,7 @@ export default function GeneratePage({
       if (data?.reasons) {
         // Validation / scheduling failure — show exactly why
         setErrors(data.reasons);
-        showToast(data.error || "Generation failed ❌");
+        showToast(data.error || "Generation failed");
       } else {
         showToast("Backend error — is Flask running on :5000?");
         console.error(err);
@@ -64,11 +64,11 @@ export default function GeneratePage({
       {errors.length > 0 && (
         <div
           className="card"
-          style={{ borderLeft: "4px solid #ff7070", background: "rgba(255,112,112,0.06)" }}
+          style={{ borderLeft: "3px solid var(--danger)", background: "var(--danger-soft)" }}
         >
           <div className="card-header">
-            <span className="card-title" style={{ color: "#ff7070" }}>
-              ❌ Generation failed — fix these issues
+            <span className="card-title" style={{ color: "var(--danger)" }}>
+              Generation failed — fix these issues
             </span>
             <span className="badge badge-red">{errors.length}</span>
           </div>
@@ -95,8 +95,15 @@ export default function GeneratePage({
             { label: "Lab rooms present",         ok: rooms.some(r => r.isLab)  },
           ].map((item, i) => (
             <div key={i} className="check-item">
-              <span>{item.ok ? "✅" : "⚠️"}</span>
-              <span style={{ fontSize: 13 }}>{item.label}</span>
+              <span style={{
+                width: 18, height: 18, borderRadius: 999, flexShrink: 0,
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                fontSize: 11, fontWeight: 600,
+                color: item.ok ? "var(--success)" : "var(--text-muted)",
+                background: item.ok ? "var(--success-soft)" : "var(--bg)",
+                border: `1px solid ${item.ok ? "var(--success)" : "var(--border-strong)"}`,
+              }}>{item.ok ? "✓" : "!"}</span>
+              <span style={{ fontSize: 14, color: "var(--text-body)" }}>{item.label}</span>
             </div>
           ))}
         </div>
@@ -107,13 +114,13 @@ export default function GeneratePage({
         <div className="card-header"><span className="card-title">Algorithm pipeline</span></div>
         {STEPS.map((s, i) => (
           <div key={i} className={`algo-step ${step > i ? "done" : step === i ? "active" : ""}`}>
-            <div className="algo-icon">{s.icon}</div>
+            <div className="algo-icon">{i + 1}</div>
             <div>
               <div className="step-title">{s.title}</div>
               <div className="step-desc">{s.desc}</div>
             </div>
-            {step > i && <span className="badge badge-green" style={{ marginLeft: "auto" }}>DONE</span>}
-            {step === i && <span className="badge badge-blue" style={{ marginLeft: "auto" }}>RUNNING</span>}
+            {step > i && <span className="badge badge-green" style={{ marginLeft: "auto" }}>Done</span>}
+            {step === i && <span className="badge" style={{ marginLeft: "auto" }}>Running</span>}
           </div>
         ))}
         {generating && (
@@ -129,7 +136,7 @@ export default function GeneratePage({
         onClick={handleGenerate}
         disabled={generating}
       >
-        {generating ? "⏳ Generating..." : "⚡ Generate Timetable"}
+        {generating ? "Generating…" : "Generate Timetable"}
       </button>
     </div>
   );

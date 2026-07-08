@@ -61,13 +61,13 @@ export default function Dashboard({
       {/* Stats */}
       <div className="stats-grid">
         {[
-          { num: subjects.length, label: "Subjects",       color: "#7c9ef0" },
-          { num: teachers.length, label: "Teachers",       color: "#5effa0" },
-          { num: classes.length,  label: "Classes",        color: "#ffc462" },
-          { num: totalPeriods,    label: "Periods / Week", color: "#c09ef0" },
+          { num: subjects.length, label: "Subjects"      },
+          { num: teachers.length, label: "Teachers"      },
+          { num: classes.length,  label: "Classes"       },
+          { num: totalPeriods,    label: "Periods / Week" },
         ].map((s, i) => (
           <div key={i} className="stat-card">
-            <div className="stat-num" style={{ color: s.color }}>{s.num}</div>
+            <div className="stat-num">{s.num}</div>
             <div className="stat-label">{s.label}</div>
           </div>
         ))}
@@ -81,20 +81,20 @@ export default function Dashboard({
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <button className="btn btn-primary" style={{ justifyContent: "flex-start" }} onClick={() => setPage("generate")}>
-              ⚡ Generate Timetable
+              Generate Timetable
             </button>
             <button className="btn btn-ghost" style={{ justifyContent: "flex-start" }} onClick={() => setPage("teachers")}>
-              👩‍🏫 Manage Teachers
+              Manage Teachers
             </button>
             <button className="btn btn-ghost" style={{ justifyContent: "flex-start" }} onClick={() => setPage("subjects")}>
-              📚 Manage Subjects
+              Manage Subjects
             </button>
             <button className="btn btn-ghost" style={{ justifyContent: "flex-start" }} onClick={() => setPage("constraints")}>
-              ⚙️ Set Constraints
+              Set Constraints
             </button>
             {timetableData && (
               <button className="btn btn-success" style={{ justifyContent: "flex-start" }} onClick={() => setPage("timetable")}>
-                📅 View Timetable
+                View Timetable
               </button>
             )}
           </div>
@@ -109,7 +109,7 @@ export default function Dashboard({
             <div className="empty-state"><p>No teachers added yet</p></div>
           )}
           {teachers.length > 0 && !timetableData && (
-            <div style={{ fontSize: 11, color: "#8892a4", marginBottom: 10 }}>
+            <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 14 }}>
               Projected from load-balanced assignment — generate a timetable to confirm.
             </div>
           )}
@@ -117,15 +117,17 @@ export default function Dashboard({
             const actual   = actualPeriodsFor(t);
             const assigned = actual !== null ? actual : (estimatedLoads[t.id] || 0);
             const pct      = Math.min(100, Math.round((assigned / (t.maxHours || 20)) * 100));
-            const color    = pct > 90 ? "#ff9090" : pct > 70 ? "#ffc462" : "#5effa0";
+            const over     = t.maxHours != null && assigned > t.maxHours;
             return (
-              <div key={t.id} style={{ marginBottom: 12 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--color-text-primary, #e2e8f0)" }}>
+              <div key={t.id} style={{ marginBottom: 14 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6, color: "var(--text-body)" }}>
                   <span>{t.name}</span>
-                  <span style={{ color }}>{assigned}/{t.maxHours}h</span>
+                  <span style={{ color: over ? "var(--danger)" : "var(--text-heading)", fontWeight: 500 }}>
+                    {assigned}/{t.maxHours}h
+                  </span>
                 </div>
                 <div className="workload-bar">
-                  <div className="workload-fill" style={{ width: `${pct}%`, background: color }} />
+                  <div className={`workload-fill ${over ? "over" : ""}`} style={{ width: `${pct}%` }} />
                 </div>
               </div>
             );
@@ -141,22 +143,24 @@ export default function Dashboard({
         <div className="grid-3">
           {[
             {
-              icon: "🔵", color: "#7c9ef0", title: "Graph Coloring",
-              desc: "Nodes = class-subject-teacher sessions. Edges = conflicts. Colors = time slots. Adjacent nodes never share a color.",
+              title: "Graph Colouring",
+              desc: "Nodes = class–subject–teacher sessions. Edges = conflicts. Colours = time slots. Adjacent nodes never share a colour.",
             },
             {
-              icon: "⬅️", color: "#ffc462", title: "Backtracking (CSP)",
-              desc: "Recursive constraint satisfaction. Assigns slots one by one. On dead-end, unassigns and retries. MRV heuristic picks hardest node first.",
+              title: "Backtracking (CSP)",
+              desc: "Recursive constraint satisfaction. Assigns slots one by one; on a dead-end it unassigns and retries. MRV heuristic picks the hardest node first.",
             },
             {
-              icon: "⚡", color: "#5effa0", title: "Greedy Optimization",
+              title: "Greedy Optimisation",
               desc: "Pre-sorts sessions: teachers with fewest free slots first, subjects with most hours/week first. Reduces search depth.",
             },
           ].map((a, i) => (
-            <div key={i} style={{ background: "#0f1117", borderRadius: 8, padding: 14, border: "1px solid #2d3748" }}>
-              <div style={{ fontSize: 22, marginBottom: 8 }}>{a.icon}</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: a.color, marginBottom: 5 }}>{a.title}</div>
-              <div style={{ fontSize: 11, color: "#8892a4", lineHeight: 1.6 }}>{a.desc}</div>
+            <div key={i} style={{ background: "var(--bg)", borderRadius: "var(--radius)", padding: 16, border: "1px solid var(--border)" }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)", marginBottom: 8, letterSpacing: "0.5px" }}>
+                {String(i + 1).padStart(2, "0")}
+              </div>
+              <div style={{ fontFamily: "var(--font-head)", fontSize: 15, fontWeight: 600, color: "var(--text-heading)", marginBottom: 6 }}>{a.title}</div>
+              <div style={{ fontSize: 13, color: "var(--text-body)", lineHeight: 1.6 }}>{a.desc}</div>
             </div>
           ))}
         </div>
@@ -169,32 +173,32 @@ export default function Dashboard({
         </div>
         <div className="grid-2">
           <div>
-            <div style={{ fontSize: 11, color: "#8892a4", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.5px" }}>Subjects</div>
-            {subjects.length === 0 && <div style={{ fontSize: 12, color: "#4a5568" }}>No subjects yet</div>}
+            <div className="form-label">Subjects</div>
+            {subjects.length === 0 && <div style={{ fontSize: 13, color: "var(--text-muted)" }}>No subjects yet</div>}
             {subjects.slice(0, 5).map(s => (
-              <div key={s.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, padding: "4px 0", borderBottom: "1px solid #2d3748", color: "#c8d6f0" }}>
+              <div key={s.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, padding: "6px 0", borderBottom: "1px solid var(--border)", color: "var(--text-heading)" }}>
                 <span>{s.name}</span>
-                <span style={{ color: "#8892a4" }}>{s.hoursPerWeek}h/wk{s.needsLab ? " 🔬" : ""}</span>
+                <span style={{ color: "var(--text-muted)" }}>{s.hoursPerWeek}h/wk{s.needsLab ? " · Lab" : ""}</span>
               </div>
             ))}
             {subjects.length > 5 && (
-              <div style={{ fontSize: 11, color: "#4a5568", marginTop: 4 }}>+{subjects.length - 5} more</div>
+              <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 6 }}>+{subjects.length - 5} more</div>
             )}
           </div>
           <div>
-            <div style={{ fontSize: 11, color: "#8892a4", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.5px" }}>Rooms</div>
-            <div style={{ fontSize: 12, color: "#8892a4", marginBottom: 6 }}>
-              <span style={{ color: "#7c9ef0", fontWeight: 600 }}>{rooms.filter(r => !r.isLab).length}</span> classrooms &nbsp;·&nbsp;
-              <span style={{ color: "#5effa0", fontWeight: 600 }}>{labRooms}</span> labs
+            <div className="form-label">Rooms</div>
+            <div style={{ fontSize: 13, color: "var(--text-body)", marginBottom: 10 }}>
+              <span style={{ color: "var(--text-heading)", fontWeight: 600 }}>{rooms.filter(r => !r.isLab).length}</span> classrooms&nbsp;·&nbsp;
+              <span style={{ color: "var(--text-heading)", fontWeight: 600 }}>{labRooms}</span> labs
             </div>
             {labSubjects > 0 && labRooms === 0 && (
-              <div style={{ background: "#3b1212", border: "1px solid #7a2424", borderRadius: 6, padding: "8px 10px", fontSize: 11, color: "#ff9090" }}>
-                ⚠️ {labSubjects} subject{labSubjects > 1 ? "s" : ""} need labs but no lab rooms are defined.
+              <div style={{ background: "var(--danger-soft)", border: "1px solid var(--danger)", borderRadius: "var(--radius-sm)", padding: "10px 12px", fontSize: 13, color: "var(--danger)" }}>
+                {labSubjects} subject{labSubjects > 1 ? "s" : ""} need labs but no lab rooms are defined.
               </div>
             )}
             {labSubjects > 0 && labRooms > 0 && (
-              <div style={{ background: "#143329", border: "1px solid #1e6b4a", borderRadius: 6, padding: "8px 10px", fontSize: 11, color: "#5effa0" }}>
-                ✅ Lab subjects and lab rooms are both configured.
+              <div style={{ background: "var(--success-soft)", border: "1px solid var(--success)", borderRadius: "var(--radius-sm)", padding: "10px 12px", fontSize: 13, color: "var(--success)" }}>
+                Lab subjects and lab rooms are both configured.
               </div>
             )}
           </div>

@@ -12,7 +12,7 @@ export default function RoomsPage({ rooms = [], setRooms, showToast }) {
       const created = await api.addRoom({ ...form, capacity: Number(form.capacity) });
       setRooms(prev => [...prev, created]);
       setForm({ name: "", capacity: 35, isLab: false });
-      showToast("Room added ✅");
+      showToast("Room added");
     } catch {
       showToast("Failed to add room");
     } finally {
@@ -88,14 +88,14 @@ export default function RoomsPage({ rooms = [], setRooms, showToast }) {
         {/* Classrooms */}
         <div className="card">
           <div className="card-header">
-            <span className="card-title">🚪 Classrooms</span>
+            <span className="card-title">Classrooms</span>
             <span className="badge badge-blue">{classrooms.length}</span>
           </div>
           {classrooms.length === 0 && <div className="empty-state"><p>No classrooms added</p></div>}
           {classrooms.map((r, i) => (
             <div key={r.id} className="list-item">
               <div className="list-item-main">
-                <div className={`avatar ${AVATAR_COLORS[i % 5]}`}>🚪</div>
+                <div className={`avatar ${AVATAR_COLORS[i % 5]}`}>{r.name[0]}</div>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-primary)" }}>{r.name}</div>
                   <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 2 }}>Capacity: {r.capacity}</div>
@@ -109,14 +109,14 @@ export default function RoomsPage({ rooms = [], setRooms, showToast }) {
         {/* Labs */}
         <div className="card">
           <div className="card-header">
-            <span className="card-title">🔬 Laboratories</span>
+            <span className="card-title">Laboratories</span>
             <span className="badge badge-green">{labs.length}</span>
           </div>
           {labs.length === 0 && <div className="empty-state"><p>No labs added</p></div>}
           {labs.map((r, i) => (
             <div key={r.id} className="list-item">
               <div className="list-item-main">
-                <div className={`avatar av-green`}>🔬</div>
+                <div className={`avatar`}>{r.name[0]}</div>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-primary)" }}>{r.name}</div>
                   <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 2 }}>Capacity: {r.capacity}</div>
