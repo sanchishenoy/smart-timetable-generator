@@ -22,10 +22,15 @@ def build_conflict_graph(sessions):
         for j in range(i + 1, len(sessions)):
             a, b = sessions[i], sessions[j]
 
-            # Two sessions conflict if they share a teacher OR share a class
+            # Two sessions conflict if they share a teacher OR share a class.
+            # An elective session (class_id "ALL") blocks every class at
+            # once, so it conflicts with every other session regardless of
+            # whose class_id it is.
             conflict = (
                 a["teacher_id"] == b["teacher_id"] or
-                a["class_id"]   == b["class_id"]
+                a["class_id"]   == b["class_id"] or
+                a["class_id"]   == "ALL" or
+                b["class_id"]   == "ALL"
             )
 
             if conflict:

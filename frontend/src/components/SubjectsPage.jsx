@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { api } from "../api";
 
 export default function SubjectsPage({ subjects = [], setSubjects, showToast }) {
-  const [form, setForm] = useState({ name: "", hoursPerWeek: 3, needsLab: false });
+  const [form, setForm] = useState({ name: "", code: "", hoursPerWeek: 3, needsLab: false, isElective: false });
   const [loading, setLoading] = useState(false);
 
   const handleAdd = async () => {
@@ -11,7 +11,7 @@ export default function SubjectsPage({ subjects = [], setSubjects, showToast }) 
     try {
       const created = await api.addSubject({ ...form, hoursPerWeek: Number(form.hoursPerWeek) });
       setSubjects(prev => [...prev, created]);
-      setForm({ name: "", hoursPerWeek: 3, needsLab: false });
+      setForm({ name: "", code: "", hoursPerWeek: 3, needsLab: false, isElective: false });
       showToast("Subject added ✅");
     } catch {
       showToast("Failed to add subject — is Flask running?");
@@ -51,6 +51,16 @@ export default function SubjectsPage({ subjects = [], setSubjects, showToast }) 
             />
           </div>
           <div className="form-group">
+            <label className="form-label">Course Code (optional)</label>
+            <input
+              className="form-input"
+              placeholder="e.g. CS241AT"
+              value={form.code}
+              onChange={e => setForm(p => ({ ...p, code: e.target.value }))}
+              onKeyDown={e => e.key === "Enter" && handleAdd()}
+            />
+          </div>
+          <div className="form-group">
             <label className="form-label">Hours / Week</label>
             <input
               type="number"
@@ -71,6 +81,20 @@ export default function SubjectsPage({ subjects = [], setSubjects, showToast }) 
               />
               <label htmlFor="needsLab" style={{ fontSize: 13, color: "var(--color-text-secondary)", cursor: "pointer" }}>
                 Lab required
+              </label>
+            </div>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Elective</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
+              <input
+                type="checkbox"
+                id="isElective"
+                checked={form.isElective}
+                onChange={e => setForm(p => ({ ...p, isElective: e.target.checked }))}
+              />
+              <label htmlFor="isElective" style={{ fontSize: 13, color: "var(--color-text-secondary)", cursor: "pointer" }}>
+                Open elective — no fixed teacher, same slot for all classes
               </label>
             </div>
           </div>
@@ -99,13 +123,16 @@ export default function SubjectsPage({ subjects = [], setSubjects, showToast }) 
             <div className="list-item-main">
               <div className={`avatar ${AVATAR_COLORS[i % 5]}`}>{s.name[0]}</div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-primary)" }}>{s.name}</div>
+                <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-primary)" }}>
+                  {s.name}{s.code ? ` (${s.code})` : ""}
+                </div>
                 <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 2 }}>
-                  {s.hoursPerWeek} hrs/week{s.needsLab ? " · Lab required" : ""}
+                  {s.hoursPerWeek} hrs/week{s.needsLab ? " · Lab required" : ""}{s.isElective ? " · Elective" : ""}
                 </div>
               </div>
             </div>
             <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              {s.isElective && <span className="badge badge-amber">ELECTIVE</span>}
               {s.needsLab && <span className="badge badge-green">LAB</span>}
               <span className="badge badge-blue">{s.hoursPerWeek}h/wk</span>
               <button className="btn btn-danger btn-sm" onClick={() => handleDelete(s.id)}>×</button>

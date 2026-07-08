@@ -1,2 +1,4 @@
 flask==3.0.0
-flask-cors==4.0.0
+flask-cors==4.0.0Both are added one at a time via the form in ConstraintsPage.jsx, listed with a delete button, and enforced in scheduler.py's _violates() — the solver simply refuses to place anything in a slot that violates one of these. They live only in React state (not persisted to the backend beyond a single generate call) and get re-sent with the full config each time you hit Generate.
+
+Everything else is a structural rule baked into the algorithm itself, not user-configurable through the UI:

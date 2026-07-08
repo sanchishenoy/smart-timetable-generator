@@ -1,16 +1,60 @@
 import React from "react";
 
+// Does a class include a subject? (empty/missing subjectIds → takes all.)
+const classTakes = (cls, subj) => {
+  const ids = cls.subjectIds;
+  if (!ids || ids.length === 0) return true;
+  return ids.includes(subj.id);
+};
+
+// Mirror of the backend's load-balanced teacher assignment, so the workload
+// shown BEFORE generation matches what generation will actually produce.
+// For each non-elective subject a class takes, the qualified teacher with the
+// lowest running load (preferring those still under maxHours) gets it.
+function estimateTeacherLoads(subjects, teachers, classes) {
+  const load = {};
+  teachers.forEach(t => { load[t.id] = 0; });
+
+  subjects.forEach(subj => {
+    if (subj.isElective) return;
+    const qualified = teachers.filter(t => (t.subjects || []).includes(subj.id));
+    if (qualified.length === 0) return;
+    const periods = subj.hoursPerWeek || 0;
+
+    classes.forEach(cls => {
+      if (!classTakes(cls, subj)) return;
+      const fits = qualified.filter(t => t.maxHours == null || load[t.id] + periods <= t.maxHours);
+      const pool = fits.length ? fits : qualified;
+      const chosen = pool.reduce((best, t) => (load[t.id] < load[best.id] ? t : best), pool[0]);
+      load[chosen.id] += periods;
+    });
+  });
+
+  return load;
+}
+
 export default function Dashboard({
   subjects = [], teachers = [], classes = [], rooms = [], timetableData, setPage,
 }) {
-  const totalPeriods = subjects.reduce((a, s) => a + s.hoursPerWeek, 0) * classes.length;
+  // Branch-aware weekly total: each class only carries the subjects it takes.
+  const totalPeriods = classes.reduce(
+    (sum, cls) => sum + subjects.filter(s => classTakes(cls, s)).reduce((a, s) => a + s.hoursPerWeek, 0),
+    0
+  );
   const labSubjects  = subjects.filter(s => s.needsLab).length;
   const labRooms     = rooms.filter(r => r.isLab).length;
 
-  const subjectHoursFor = (t) =>
-    subjects
-      .filter(s => (t.subjects || []).includes(s.id))
-      .reduce((a, s) => a + s.hoursPerWeek, 0);
+  const estimatedLoads = estimateTeacherLoads(subjects, teachers, classes);
+
+  // Once a timetable exists, show each teacher's real assigned periods;
+  // otherwise fall back to the load-balanced estimate above.
+  const actualPeriodsFor = (t) => {
+    const tt = timetableData?.teacherTimetable?.[t.id];
+    if (!tt) return null;
+    return Object.values(tt).reduce(
+      (total, daySlots) => total + Object.keys(daySlots).length, 0
+    );
+  };
 
   return (
     <div>
@@ -64,8 +108,14 @@ export default function Dashboard({
           {teachers.length === 0 && (
             <div className="empty-state"><p>No teachers added yet</p></div>
           )}
+          {teachers.length > 0 && !timetableData && (
+            <div style={{ fontSize: 11, color: "#8892a4", marginBottom: 10 }}>
+              Projected from load-balanced assignment — generate a timetable to confirm.
+            </div>
+          )}
           {teachers.map(t => {
-            const assigned = subjectHoursFor(t) * Math.max(classes.length, 1);
+            const actual   = actualPeriodsFor(t);
+            const assigned = actual !== null ? actual : (estimatedLoads[t.id] || 0);
             const pct      = Math.min(100, Math.round((assigned / (t.maxHours || 20)) * 100));
             const color    = pct > 90 ? "#ff9090" : pct > 70 ? "#ffc462" : "#5effa0";
             return (

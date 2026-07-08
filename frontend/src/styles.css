@@ -115,6 +115,7 @@ body {
 .badge-green  { background: #143329; color: #5effa0; }
 .badge-red    { background: #3b1212; color: #ff9090; }
 .badge-amber  { background: #3b2c12; color: #ffc462; }
+.badge-purple { background: #2a1a5c; color: #c09ef0; }
 
 /* ── Grids ── */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -216,6 +217,7 @@ select.form-input option { background: #1e2535; }
 .cell           { background: #161b27; border-radius: 5px; padding: 4px 6px; height: 100%; display: flex; flex-direction: column; gap: 1px; }
 .cell.free      { background: transparent; }
 .cell.lab       { background: #143329; border-left: 2px solid #5effa0; border-radius: 0 5px 5px 0; }
+.cell.elective  { background: #241a3d; border-left: 2px solid #b48cf0; border-radius: 0 5px 5px 0; }
 .cell.fixed     { background: #2a1a5c; border-left: 2px solid #c09ef0; border-radius: 0 5px 5px 0; }
 .cell.conflict  { background: #3b1212; border-left: 2px solid #ff7070; border-radius: 0 5px 5px 0; }
 .cell-subject   { font-size: 11px; font-weight: 600; color: #c8d6f0; line-height: 1.3; }
@@ -285,24 +287,40 @@ select.form-input option { background: #1e2535; }
   .sidebar { display: none; }
 }
 
-/* Double period lab cells */
-.cell.double-top {
-  border-radius: 5px 5px 0 0;
-  border-bottom: 1px dashed #5effa0;
-  background: #143329;
-  border-left: 2px solid #5effa0;
+/* Double-period cells span two adjacent period COLUMNS (left + right half).
+   Only border-radius / divider here — background stays from .lab / .elective. */
+.cell.double-left  { border-radius: 5px 0 0 5px; border-right: 1px dashed rgba(94,255,160,0.55); }
+.cell.double-right { border-radius: 0 5px 5px 0; opacity: 0.9; }
+
+/* Break columns in the transposed grid */
+.timetable th.break-col,
+.timetable td.break-col {
+  background: #241a0f;
+  color: #ffc462;
+  min-width: 40px;
+  max-width: 52px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px;
+  text-align: center;
 }
-.cell.double-bottom {
-  border-radius: 0 0 5px 5px;
-  background: #0f2a1e;
-  border-left: 2px solid #5effa0;
-  opacity: 0.85;
+
+/* Heading above a timetable — identifies the class/teacher (shows in PDF) */
+.tt-heading {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-primary, #e2e8f0);
+  margin-bottom: 12px;
 }
+.tt-heading .tt-sub { font-size: 12px; font-weight: 500; color: #8892a4; margin-left: 8px; }
+
 @media print {
+  @page           { size: landscape; margin: 12mm; }
   .sidebar        { display: none; }
   .topbar         { display: none; }
   .tabs           { display: none; }
   .btn            { display: none; }
+  .legend-print-hide { display: none; }
   .content        { padding: 0; }
   body            { background: white; color: black; }
   .timetable th   { background: #333; color: white; }
@@ -310,4 +328,7 @@ select.form-input option { background: #1e2535; }
   .cell-subject   { color: black; font-weight: bold; }
   .cell-teacher   { color: #333; }
   .cell-room      { color: #555; }
+  .tt-heading     { color: black; font-size: 18px; margin-bottom: 10px; }
+  .tt-heading .tt-sub { color: #333; }
+  .break-col      { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }

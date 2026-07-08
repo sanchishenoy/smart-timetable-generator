@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
+import { DAYS, PERIODS, PERIOD_TIMES } from "../constants";
 
-const DAYS    = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-const PERIODS = [1, 2, 3, 4, 5, 6, 7, 8];
+const TYPES = [
+  { value: "teacher_unavail",  label: "🚫 Teacher Unavailable" },
+  { value: "fixed",            label: "📌 Fixed Period"         },
+  { value: "max_labs_per_day", label: "🔬 Max Labs / Day"       },
+];
 
 export default function ConstraintsPage({ constraints = [], setConstraints, teachers = [], showToast }) {
-  const [type,        setType]        = useState("teacher_unavail");
-  const [teacherId,   setTeacherId]   = useState("");
-  const [day,         setDay]         = useState(0);
-  const [period,      setPeriod]      = useState(1);
-  const [description, setDescription] = useState("");
+  const [type,          setType]          = useState("teacher_unavail");
+  const [teacherId,     setTeacherId]     = useState("");
+  const [day,           setDay]           = useState(0);
+  const [period,        setPeriod]        = useState(1);
+  const [maxLabsPerDay, setMaxLabsPerDay] = useState(1);
+  const [description,   setDescription]   = useState("");
 
   // Whenever teachers list changes, auto-select first teacher if none selected
   useEffect(() => {
@@ -20,17 +25,26 @@ export default function ConstraintsPage({ constraints = [], setConstraints, teac
   const handleAdd = () => {
     if (type === "teacher_unavail" && !teacherId)
       return showToast("No teachers available — add teachers first");
+    if (type === "max_labs_per_day" && Number(maxLabsPerDay) < 1)
+      return showToast("Max labs/day must be at least 1");
 
-    const entry = {
-      id: `con_${Date.now()}`,
-      type,
-      day:    Number(day),
-      period: Number(period),
-      description: description || (type === "fixed" ? "Fixed period" : "Unavailable"),
-      ...(type === "teacher_unavail"
-        ? { teacherId }
-        : { affectsAll: true }),
-    };
+    const entry = type === "max_labs_per_day"
+      ? {
+          id: `con_${Date.now()}`,
+          type,
+          maxCount: Number(maxLabsPerDay),
+          description: description || `Max ${maxLabsPerDay} lab${maxLabsPerDay > 1 ? "s" : ""}/day`,
+        }
+      : {
+          id: `con_${Date.now()}`,
+          type,
+          day:    Number(day),
+          period: Number(period),
+          description: description || (type === "fixed" ? "Fixed period" : "Unavailable"),
+          ...(type === "teacher_unavail"
+            ? { teacherId }
+            : { affectsAll: true }),
+        };
 
     setConstraints(prev => [...prev, entry]);
     setDescription("");
@@ -46,6 +60,7 @@ export default function ConstraintsPage({ constraints = [], setConstraints, teac
 
   const fixed   = constraints.filter(c => c.type === "fixed");
   const unavail = constraints.filter(c => c.type === "teacher_unavail");
+  const labCaps = constraints.filter(c => c.type === "max_labs_per_day");
 
   return (
     <div>
@@ -57,11 +72,8 @@ export default function ConstraintsPage({ constraints = [], setConstraints, teac
         {/* Type selector */}
         <div className="form-group">
           <label className="form-label">Constraint Type</label>
-          <div style={{ display: "flex", gap: 16, marginTop: 6 }}>
-            {[
-              { value: "teacher_unavail", label: "🚫 Teacher Unavailable" },
-              { value: "fixed",           label: "📌 Fixed Period"         },
-            ].map(opt => (
+          <div style={{ display: "flex", gap: 16, marginTop: 6, flexWrap: "wrap" }}>
+            {TYPES.map(opt => (
               <label key={opt.value} style={{
                 display: "flex", alignItems: "center", gap: 6,
                 cursor: "pointer", fontSize: 13,
@@ -103,33 +115,50 @@ export default function ConstraintsPage({ constraints = [], setConstraints, teac
             </div>
           )}
 
-          {/* Day */}
-          <div className="form-group">
-            <label className="form-label">Day</label>
-            <select
-              className="form-input"
-              value={day}
-              onChange={e => setDay(e.target.value)}
-            >
-              {DAYS.map((d, i) => (
-                <option key={i} value={i}>{d}</option>
-              ))}
-            </select>
-          </div>
+          {/* Day + Period — only for slot-based constraints */}
+          {type !== "max_labs_per_day" && (
+            <>
+              <div className="form-group">
+                <label className="form-label">Day</label>
+                <select
+                  className="form-input"
+                  value={day}
+                  onChange={e => setDay(e.target.value)}
+                >
+                  {DAYS.map((d, i) => (
+                    <option key={i} value={i}>{d}</option>
+                  ))}
+                </select>
+              </div>
 
-          {/* Period */}
-          <div className="form-group">
-            <label className="form-label">Period</label>
-            <select
-              className="form-input"
-              value={period}
-              onChange={e => setPeriod(e.target.value)}
-            >
-              {PERIODS.map(p => (
-                <option key={p} value={p}>Period {p}</option>
-              ))}
-            </select>
-          </div>
+              <div className="form-group">
+                <label className="form-label">Period</label>
+                <select
+                  className="form-input"
+                  value={period}
+                  onChange={e => setPeriod(e.target.value)}
+                >
+                  {PERIODS.map(p => (
+                    <option key={p} value={p}>Period {p} ({PERIOD_TIMES[p]})</option>
+                  ))}
+                </select>
+              </div>
+            </>
+          )}
+
+          {/* Max labs/day — only for the daily-cap constraint */}
+          {type === "max_labs_per_day" && (
+            <div className="form-group">
+              <label className="form-label">Max labs per day (per class)</label>
+              <input
+                type="number"
+                className="form-input"
+                min={1} max={6}
+                value={maxLabsPerDay}
+                onChange={e => setMaxLabsPerDay(e.target.value)}
+              />
+            </div>
+          )}
 
           {/* Label */}
           <div className="form-group">
@@ -198,6 +227,31 @@ export default function ConstraintsPage({ constraints = [], setConstraints, teac
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Lab daily caps */}
+      <div className="card">
+        <div className="card-header">
+          <span className="card-title">🔬 Lab Limits</span>
+          <span className="badge badge-green">{labCaps.length}</span>
+        </div>
+        {labCaps.length === 0 && (
+          <div className="empty-state"><p>No lab limit set — classes may have any number of labs per day</p></div>
+        )}
+        {labCaps.map(c => (
+          <div key={c.id} className="constraint-row">
+            <span>🔬</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 12, fontWeight: 500, color: "#c8d6f0" }}>
+                {c.description}
+              </div>
+              <div style={{ fontSize: 10, color: "#4a5568", marginTop: 2 }}>
+                Max {c.maxCount} lab{c.maxCount > 1 ? "s" : ""}/day · All classes
+              </div>
+            </div>
+            <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c.id)}>×</button>
+          </div>
+        ))}
       </div>
     </div>
   );

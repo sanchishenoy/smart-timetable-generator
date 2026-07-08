@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { api } from "../api";
 
-export default function TeachersPage({ teachers = [], setTeachers, subjects = [], showToast }) {
+export default function TeachersPage({ teachers = [], setTeachers, subjects = [], classes = [], showToast }) {
   const [form, setForm] = useState({ name: "", subjectIds: [], maxHours: 20 });
   const [loading, setLoading] = useState(false);
 
@@ -50,11 +50,14 @@ export default function TeachersPage({ teachers = [], setTeachers, subjects = []
   const initials = (name) =>
     name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
 
-  // Compute hours this teacher would be assigned given current subjects × classes
+  // Real weekly load = subject hours × number of classes, with labs counted as
+  // double periods. This mirrors the scheduler (one session per class per subject),
+  // so the bar stays consistent with the generator's overload validation.
+  const classCount = Math.max(classes.length, 1);
   const subjectHours = (t) =>
     subjects
       .filter(s => (t.subjects || []).includes(s.id))
-      .reduce((a, s) => a + s.hoursPerWeek, 0);
+      .reduce((a, s) => a + s.hoursPerWeek * (s.needsLab ? 2 : 1) * classCount, 0);
 
   return (
     <div>

@@ -2,10 +2,15 @@ from flask import Blueprint, request, jsonify
 
 classes_bp = Blueprint("classes", __name__)
 
+# Student strength wasn't specified — defaulted to 60 for all three.
+# subjectIds are the courses a class's branch takes. The three CS classes
+# all take every subject; other branches would tick a different set.
+_ALL_SUBJECT_IDS = ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9"]
+
 _classes = [
-    {"id": "c1", "name": "Grade 10-A", "strength": 35},
-    {"id": "c2", "name": "Grade 10-B", "strength": 32},
-    {"id": "c3", "name": "Grade 11-A", "strength": 30},
+    {"id": "c1", "name": "CS-A", "branch": "CS", "strength": 60, "subjectIds": list(_ALL_SUBJECT_IDS)},
+    {"id": "c2", "name": "CS-B", "branch": "CS", "strength": 60, "subjectIds": list(_ALL_SUBJECT_IDS)},
+    {"id": "c3", "name": "CS-C", "branch": "CS", "strength": 60, "subjectIds": list(_ALL_SUBJECT_IDS)},
 ]
 
 @classes_bp.get("/")

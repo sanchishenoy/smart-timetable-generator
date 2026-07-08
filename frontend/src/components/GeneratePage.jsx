@@ -18,9 +18,11 @@ export default function GeneratePage({
   const [generating, setGenerating] = useState(false);
   const [step,       setStep]       = useState(-1);
   const [progress,   setProgress]   = useState(0);
+  const [errors,     setErrors]     = useState([]);
 
   const handleGenerate = async () => {
     setGenerating(true);
+    setErrors([]);
 
     // Animate through steps while calling backend
     for (let i = 0; i < 4; i++) {
@@ -38,8 +40,19 @@ export default function GeneratePage({
       await sleep(800);
       setPage("timetable");
     } catch (err) {
-      showToast("Backend error — is Flask running on :5000?");
-      console.error(err);
+      // Reset the pipeline animation
+      setStep(-1);
+      setProgress(0);
+
+      const data = err?.response?.data;
+      if (data?.reasons) {
+        // Validation / scheduling failure — show exactly why
+        setErrors(data.reasons);
+        showToast(data.error || "Generation failed ❌");
+      } else {
+        showToast("Backend error — is Flask running on :5000?");
+        console.error(err);
+      }
     } finally {
       setGenerating(false);
     }
@@ -47,6 +60,28 @@ export default function GeneratePage({
 
   return (
     <div>
+      {/* Failure reasons — why generation was rejected */}
+      {errors.length > 0 && (
+        <div
+          className="card"
+          style={{ borderLeft: "4px solid #ff7070", background: "rgba(255,112,112,0.06)" }}
+        >
+          <div className="card-header">
+            <span className="card-title" style={{ color: "#ff7070" }}>
+              ❌ Generation failed — fix these issues
+            </span>
+            <span className="badge badge-red">{errors.length}</span>
+          </div>
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            {errors.map((msg, i) => (
+              <li key={i} style={{ fontSize: 13, color: "var(--color-text-primary)", marginBottom: 4 }}>
+                {msg}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Pre-flight checklist */}
       <div className="card">
         <div className="card-header"><span className="card-title">Pre-flight check</span></div>

@@ -4,12 +4,15 @@ subjects_bp = Blueprint("subjects", __name__)
 
 # In-memory store (swap for DB later)
 _subjects = [
-    {"id": "s1", "name": "Mathematics",      "hoursPerWeek": 5, "needsLab": False},
-    {"id": "s2", "name": "Physics",           "hoursPerWeek": 4, "needsLab": True},
-    {"id": "s3", "name": "English",           "hoursPerWeek": 4, "needsLab": False},
-    {"id": "s4", "name": "Chemistry",         "hoursPerWeek": 3, "needsLab": True},
-    {"id": "s5", "name": "History",           "hoursPerWeek": 3, "needsLab": False},
-    {"id": "s6", "name": "Computer Science",  "hoursPerWeek": 2, "needsLab": True},
+    {"id": "s1", "name": "DMS",               "code": "CS241AT", "hoursPerWeek": 3, "needsLab": False, "isElective": False},
+    {"id": "s2", "name": "DAA",               "code": "CD343AI", "hoursPerWeek": 3, "needsLab": False, "isElective": False},
+    {"id": "s3", "name": "IoT and Embedded",  "code": "CS344AI", "hoursPerWeek": 3, "needsLab": False, "isElective": False},
+    {"id": "s4", "name": "CN",                "code": "CY245AT", "hoursPerWeek": 3, "needsLab": False, "isElective": False},
+    {"id": "s5", "name": "UHV",               "code": "HS245XT", "hoursPerWeek": 2, "needsLab": False, "isElective": False},
+    {"id": "s6", "name": "AEC",               "code": "HS245XX", "hoursPerWeek": 2, "needsLab": True,  "isElective": True},
+    {"id": "s7", "name": "IOT Lab",           "code": "",        "hoursPerWeek": 2, "needsLab": True,  "isElective": False},
+    {"id": "s8", "name": "DAA Lab",           "code": "",        "hoursPerWeek": 2, "needsLab": True,  "isElective": False},
+    {"id": "s9", "name": "Basket",            "code": "",        "hoursPerWeek": 3, "needsLab": False, "isElective": True},
 ]
 
 @subjects_bp.get("/")
