@@ -84,8 +84,7 @@ export default function App() {
           <h2>{NAV.find(n => n.id === page)?.label}</h2>
           {page === "timetable" && timetableData && (
             <div className="topbar-actions">
-              <button className="btn btn-ghost btn-sm" onClick={() => showToast("Exported as Excel")}>📊 XLS</button>
-              <button className="btn btn-ghost btn-sm" onClick={() => showToast("Exported as PDF")}>📄 PDF</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => window.print()}>📄 PDF</button>
               <button className="btn btn-primary btn-sm" onClick={() => setPage("generate")}>🔄 Regenerate</button>
             </div>
           )}
