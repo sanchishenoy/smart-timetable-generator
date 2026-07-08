@@ -298,3 +298,16 @@ select.form-input option { background: #1e2535; }
   border-left: 2px solid #5effa0;
   opacity: 0.85;
 }
+@media print {
+  .sidebar        { display: none; }
+  .topbar         { display: none; }
+  .tabs           { display: none; }
+  .btn            { display: none; }
+  .content        { padding: 0; }
+  body            { background: white; color: black; }
+  .timetable th   { background: #333; color: white; }
+  .timetable td   { border: 1px solid #ccc; }
+  .cell-subject   { color: black; font-weight: bold; }
+  .cell-teacher   { color: #333; }
+  .cell-room      { color: #555; }
+}
